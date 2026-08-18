@@ -10,5 +10,121 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // 浏览器兼容性检测 + 友好提示页（普通脚本，老浏览器也能执行）
+      (function () {
+        var zh = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0;
+
+        function stopMain() {
+          var m = document.querySelector('script[type="module"][src]');
+          if (m) m.remove();
+          var pre = document.querySelectorAll('link[rel="modulepreload"]');
+          for (var i = 0; i < pre.length; i++) pre[i].remove();
+        }
+
+        function showWarning(kind) {
+          stopMain();
+          var title, desc, links = '', extra = '';
+          if (kind === 'browser') {
+            title = zh ? '浏览器版本过低' : 'Browser Too Old';
+            desc = zh
+              ? '当前浏览器缺少运行本工具所需的现代网页技术（ES Modules / WebAssembly 等）。请升级到以下浏览器的<span>最新版本</span>：'
+              : 'Your browser lacks the modern web technologies (ES Modules / WebAssembly) required by this tool. Please upgrade to the latest version of:';
+            links =
+              '<a class="cw-btn" href="https://www.google.com/chrome/" target="_blank" rel="noopener">Google Chrome</a>' +
+              '<a class="cw-btn" href="https://www.microsoft.com/edge" target="_blank" rel="noopener">Microsoft Edge</a>' +
+              '<a class="cw-btn" href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener">Firefox</a>';
+          } else {
+            title = zh ? '页面资源加载失败' : 'Failed to Load Resources';
+            desc = zh
+              ? '本工具的主程序未能正常加载。可能原因：'
+              : 'The main program failed to load. Possible reasons:';
+            extra = zh
+              ? '<ul>'
+                + '<li>当前网络无法稳定访问 GitHub Pages（国内部分地区可能受限）</li>'
+                + '<li>网络不稳定，导致约 2MB 的程序包加载超时</li>'
+                + '<li>浏览器扩展拦截了脚本</li>'
+                + '</ul>'
+                + '<p class="cw-tip">建议：刷新重试；更换网络环境（如使用香港 / 海外节点）；关闭广告拦截类扩展后重试。若仍失败，说明当前网络无法访问 GitHub Pages，需更换托管平台。</p>'
+              : '<ul>'
+                + '<li>The network cannot reach GitHub Pages stably (some regions may be restricted)</li>'
+                + '<li>Unstable network caused the ~2MB bundle to time out</li>'
+                + '<li>A browser extension blocked the script</li>'
+                + '</ul>'
+                + '<p class="cw-tip">Suggestions: refresh and retry; switch network (e.g. use HK / overseas node); disable ad-blockers. If it still fails, this network cannot reach GitHub Pages and a different host is needed.</p>';
+          }
+
+          var root = document.getElementById('root');
+          if (root) root.innerHTML = '';
+          var box = document.createElement('div');
+          box.id = 'compat-warning';
+          box.innerHTML =
+            '<div class="cw-card">'
+            + '<div class="cw-logo">📄</div>'
+            + '<h1 class="cw-title">' + title + '</h1>'
+            + '<p class="cw-desc">' + desc + '</p>'
+            + (kind === 'browser' ? '<div class="cw-links">' + links + '</div>' : '')
+            + extra
+            + '</div>';
+          document.body.appendChild(box);
+
+          if (!document.getElementById('cw-style')) {
+            var s = document.createElement('style');
+            s.id = 'cw-style';
+            s.textContent =
+              '#compat-warning{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;'
+              + 'padding:24px;background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;z-index:99999;}'
+              + '.cw-card{max-width:480px;width:100%;background:#fff;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.08);'
+              + 'padding:36px 32px;text-align:center;}'
+              + '.cw-logo{font-size:44px;line-height:1;margin-bottom:12px;}'
+              + '.cw-title{font-size:22px;font-weight:700;color:#1f2937;margin:0 0 12px;}'
+              + '.cw-desc{font-size:15px;color:#4b5563;line-height:1.7;margin:0 0 18px;}'
+              + '.cw-desc span{color:#2563eb;font-weight:600;}'
+              + '.cw-links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:8px;}'
+              + '.cw-btn{display:inline-block;padding:10px 16px;border-radius:10px;background:#2563eb;color:#fff;'
+              + 'text-decoration:none;font-size:14px;font-weight:600;transition:.2s;}'
+              + '.cw-btn:hover{background:#1d4ed8;}'
+              + '.cw-card ul{text-align:left;color:#4b5563;font-size:14px;line-height:1.8;margin:0 0 14px;padding-left:20px;}'
+              + '.cw-tip{font-size:13px;color:#6b7280;line-height:1.7;background:#f3f4f6;border-radius:10px;padding:12px 14px;text-align:left;margin:0;}';
+            document.head.appendChild(s);
+          }
+        }
+
+        // 调试入口：?force=unsupported 或 ?force=network（验证提示页用）
+        var fm = /[?&]force=([^&]+)/.exec(location.search);
+        var force = fm ? fm[1] : null;
+
+        function detect() {
+          var failed = [];
+          var checks = {
+            esModule: (function () { try { new Function('return import(1)'); return true; } catch (e) { return false; } })(),
+            promise: typeof Promise === 'function',
+            fetch: typeof fetch === 'function',
+            worker: typeof Worker !== 'undefined',
+            wasm: typeof WebAssembly === 'object',
+            canvas: !!document.createElement('canvas').getContext,
+            textEncoder: typeof TextEncoder !== 'undefined'
+          };
+          for (var k in checks) { if (!checks[k]) failed.push(k); }
+          return { ok: failed.length === 0, failed: failed };
+        }
+
+        if (force === 'unsupported') { showWarning('browser'); return; }
+        if (force === 'network') { showWarning('network'); return; }
+
+        var d = detect();
+        if (!d.ok) { showWarning('browser'); return; }
+
+        // 浏览器支持：监听主程序加载失败 + 超时兜底（约 2MB 包加载慢/被拦截）
+        var main = document.querySelector('script[type="module"][src]');
+        if (main) main.addEventListener('error', function () { showWarning('network'); });
+        setTimeout(function () {
+          var r = document.getElementById('root');
+          if (r && r.childElementCount === 0 && !document.getElementById('compat-warning')) {
+            showWarning('network');
+          }
+        }, 15000);
+      })();
+    </script>
   </body>
 </html>
