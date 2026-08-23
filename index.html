@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script type="module" crossorigin src="./assets/polyfills-DHpdHRDn.js"></script>
+
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PDF/文档签章排版工具</title>
-    <script type="module" crossorigin src="./assets/index-BjOzByEZ.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CE_zYRSw.css">
+    <script type="module" crossorigin src="./assets/index-_7H_EESy.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CXDC4fUZ.css">
   </head>
   <body>
     <div id="root"></div>
@@ -16,24 +18,25 @@
         var zh = (navigator.language || 'zh').toLowerCase().indexOf('zh') === 0;
 
         function stopMain() {
-          var m = document.querySelector('script[type="module"][src]');
-          if (m) m.remove();
+          var modules = document.querySelectorAll('script[type="module"][src]');
+          for (var j = 0; j < modules.length; j++) modules[j].remove();
           var pre = document.querySelectorAll('link[rel="modulepreload"]');
           for (var i = 0; i < pre.length; i++) pre[i].remove();
         }
 
         function showWarning(kind) {
+          window.__SIGNER_COMPAT_BLOCKED__ = true;
           stopMain();
           var title, desc, links = '', extra = '';
           if (kind === 'browser') {
             title = zh ? '浏览器版本过低' : 'Browser Too Old';
             desc = zh
-              ? '当前浏览器缺少运行本工具所需的现代网页技术（ES Modules / WebAssembly 等）。请升级到以下浏览器的<span>最新版本</span>：'
-              : 'Your browser lacks the modern web technologies (ES Modules / WebAssembly) required by this tool. Please upgrade to the latest version of:';
+              ? '当前浏览器缺少运行本工具所需的网页能力。请使用 <span>Chrome/Edge 90+</span> 或 <span>Safari 15+</span>；不支持 IE11。'
+              : 'Your browser is missing required web capabilities. Use <span>Chrome/Edge 90+</span> or <span>Safari 15+</span>. IE11 is not supported.';
             links =
               '<a class="cw-btn" href="https://www.google.com/chrome/" target="_blank" rel="noopener">Google Chrome</a>' +
               '<a class="cw-btn" href="https://www.microsoft.com/edge" target="_blank" rel="noopener">Microsoft Edge</a>' +
-              '<a class="cw-btn" href="https://www.mozilla.org/firefox/" target="_blank" rel="noopener">Firefox</a>';
+              '<a class="cw-btn" href="https://support.apple.com/downloads/safari" target="_blank" rel="noopener">Apple Safari</a>';
           } else {
             title = zh ? '页面资源加载失败' : 'Failed to Load Resources';
             desc = zh
@@ -90,7 +93,8 @@
           }
         }
 
-        // 调试入口：?force=unsupported 或 ?force=network（验证提示页用）
+        // 调试入口：提示页与旧版 Map/WeakMap 回归。
+        // ?force=unsupported | ?force=network | ?force=legacy-map
         var fm = /[?&]force=([^&]+)/.exec(location.search);
         var force = fm ? fm[1] : null;
 
@@ -103,10 +107,25 @@
             worker: typeof Worker !== 'undefined',
             wasm: typeof WebAssembly === 'object',
             canvas: !!document.createElement('canvas').getContext,
-            textEncoder: typeof TextEncoder !== 'undefined'
+            textEncoder: typeof TextEncoder !== 'undefined',
+            indexedDb: typeof indexedDB !== 'undefined',
+            fileReader: typeof FileReader !== 'undefined',
+            blob: typeof Blob !== 'undefined',
+            resizeObserver: typeof ResizeObserver !== 'undefined'
           };
           for (var k in checks) { if (!checks[k]) failed.push(k); }
           return { ok: failed.length === 0, failed: failed };
+        }
+
+        if (force === 'legacy-map') {
+          try {
+            delete Map.prototype.getOrInsert;
+            delete Map.prototype.getOrInsertComputed;
+            delete WeakMap.prototype.getOrInsert;
+            delete WeakMap.prototype.getOrInsertComputed;
+          } catch (e) {
+            // 删除失败时仍继续启动，由后续能力检测/PDF 错误提示兜底。
+          }
         }
 
         if (force === 'unsupported') { showWarning('browser'); return; }
