@@ -19,6 +19,16 @@
 
 ---
 
+## 其他工具
+
+[<img src="assets/weee-icon.svg" width="64" alt="德国 WEEE 产品分类" />](https://yinxi800.github.io/german-weee-classification/)
+
+**[德国 WEEE 产品分类](https://yinxi800.github.io/german-weee-classification/)** · [GitHub 仓库](https://github.com/Yinxi800/german-weee-classification)
+
+支持中文产品名称查询和条件引导，查看分类建议及参考依据。
+
+---
+
 ## 核心能力
 
 - **📄 输入格式**：PDF（含扫描版 / 图片型 PDF）、JPG、PNG 扫描图片。
