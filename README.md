@@ -21,7 +21,7 @@
 
 ## 其他工具
 
-[<img src="assets/weee-icon.svg" width="64" alt="德国 WEEE 产品分类" />](https://yinxi800.github.io/german-weee-classification/)
+[<img src="assets/weee-icon.svg?v=20261029-de-electronics" width="64" alt="德国 WEEE 产品分类" />](https://yinxi800.github.io/german-weee-classification/)
 
 **[德国 WEEE 产品分类](https://yinxi800.github.io/german-weee-classification/)** · [GitHub 仓库](https://github.com/Yinxi800/german-weee-classification)
 

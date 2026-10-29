@@ -1,11 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="512" height="512" role="img" aria-labelledby="title description">
   <title id="title">德国 WEEE 产品分类</title>
-  <desc id="description">蓝色圆角图标，白色 W 字母与六个分类标记</desc>
-  <rect width="64" height="64" rx="14" fill="#0863da"/>
-  <path d="M14 17 21 39 32 23 43 39 50 17" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-  <g fill="#fff">
-    <circle cx="17" cy="50" r="1.8"/><circle cx="23" cy="50" r="1.8"/>
-    <circle cx="29" cy="50" r="1.8"/><circle cx="35" cy="50" r="1.8"/>
-    <circle cx="41" cy="50" r="1.8"/><circle cx="47" cy="50" r="1.8"/>
+  <desc id="description">德国黑红金三色电源插头，代表德国电气电子设备分类</desc>
+  <defs>
+    <clipPath id="plug-body"><rect x="14" y="21" width="36" height="28" rx="8"/></clipPath>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="#f1f4f8"/>
+  <g fill="none" stroke="#171717" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M25 11v12M39 11v12"/>
+    <path d="M32 47v5a5 5 0 0 0 5 5h11"/>
+  </g>
+  <g clip-path="url(#plug-body)">
+    <path fill="#171717" d="M14 21h36v10H14z"/>
+    <path fill="#dd0000" d="M14 30.333h36v9.334H14z"/>
+    <path fill="#ffce00" d="M14 39.667h36V49H14z"/>
   </g>
 </svg>
