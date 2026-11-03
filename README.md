@@ -2,8 +2,13 @@
   <img src="logo.svg" alt="PDF 文档签章工具" width="110" />
 </p>
 
-# PDF 文档签章工具
-在线使用https://yinxi800.github.io/
+# PDF 文档签章工具 | PDF Signature & Stamp Tool
+
+[在线使用 / Open the tool](https://yinxi800.github.io/)
+
+在浏览器中为 PDF、JPG 或 PNG 添加签名与印章图像，调整位置和尺寸，导出扫描效果 PDF。工具不提供电子认证服务；使用范围请以网站内免责声明为准。
+
+A browser-based PDF signature and stamp tool. Add visual signature and stamp images to PDF documents or images, adjust placement, and export a scanned-look PDF. This tool does not create certificate-based digital signatures.
 
 [![在线使用](https://img.shields.io/badge/在线使用-GitHub%20Pages-brightgreen)](https://yinxi800.github.io/)
 [![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
@@ -13,9 +18,9 @@
 [![pdf.js](https://img.shields.io/badge/pdf.js-render-red)](https://mozilla.github.io/pdf.js/)
 [![pdf-lib](https://img.shields.io/badge/pdf--lib-write-red)](https://github.com/Hopding/pdf-lib)
 [![Fabric.js](https://img.shields.io/badge/Fabric.js-7-orange)](https://fabricjs.com/)
-[![隐私](https://img.shields.io/badge/文件处理-纯本地%20·%20不上传-success)](https://github.com/yinxi0916/Z-Claw)
+[![浏览器处理](https://img.shields.io/badge/文件处理-浏览器内-success)](#隐私与安全)
 
-文档全程在**本地内存**中处理：pdf.js 解析页面、Fabric.js 承载签章、pdf-lib 逐页写出扫描版 PDF，没有任何一个字节发往服务器。产出的不是"贴了个透明图片的 PDF"，而是经过墨迹侵蚀、纸张纹理、页面倾斜与扫描噪声处理的**扫描件观感**文件。
+文档解析、签章合成和 PDF 导出在浏览器中完成：pdf.js 解析页面、Fabric.js 承载签章，pdf-lib 逐页写出扫描版 PDF。可调整墨迹、纸张纹理、页面倾斜和扫描噪声，生成**扫描件观感**文件。
 
 ---
 
@@ -49,7 +54,7 @@
 
 - **⚡ 大文件保护**：超过 15 MB 或渲染像素超限时，导入前弹窗确认并自动下调渲染精度，防止浏览器内存打爆。
 
-- **🔒 本地优先**：印章 / 签名库持久化在浏览器 IndexedDB，刷新不丢；文档本身从不落盘、从不上传。
+- **🔒 本地优先**：印章 / 签名库保存在浏览器 IndexedDB；文档解析、签章和导出在浏览器中处理。
 
 - **🌐 双语界面**：中文 / English 一键切换。
 
@@ -96,23 +101,23 @@
 
 ## 隐私与安全
 
-- 文档解析、签章合成、PDF 写出全部在浏览器内完成，**无后端接口、无上传**。
-- 印章 / 签名素材保存在浏览器 IndexedDB，不会离开本机。
-- 导出的 PDF 直接下载到本地，服务端不留存任何副本。
+- 文档解析、签章合成和 PDF 写出在浏览器内完成。
+- 印章 / 签名素材保存在当前浏览器的 IndexedDB；清除浏览器站点数据后需重新导入。
+- 页面使用第三方不蒜子访问统计服务，浏览器加载页面时会向该服务发起请求。
 
 ---
 
-## 目录结构
+## 仓库内容 / Repository contents
+
+此公开仓库存放供 GitHub Pages 使用的**已构建网页文件**，不包含开发用的 `frontend/` 源码目录。
+
+This public repository contains the built website for GitHub Pages. The `frontend/` development source directory is not included here.
 
 ```text
-frontend/
-├── public/            # 静态资源（logo、README 会随构建复制到产物根目录）
-├── scripts/           # 构建产物兼容性校验
-└── src/
-    ├── components/    # 上传、页面导航、PDF 视图、签章画布、印章面板、预览弹窗
-    ├── lib/           # PDF 解析、渲染引擎、效果预设、大文件策略、i18n、IndexedDB
-    ├── stores/        # 文档 / 印章 / UI 状态
-    └── theme.ts       # 设计令牌与 Ant Design 主题
+index.html    # 网页入口 / website entry point
+assets/       # 构建后的脚本、样式和资源 / built assets
+README.md     # 项目说明 / project documentation
+LICENSE       # 许可说明 / license
 ```
 
 ---
